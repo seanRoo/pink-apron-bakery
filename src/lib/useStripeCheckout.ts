@@ -18,25 +18,28 @@ export function useStripeCheckout() {
         },
         quantity: item.qty,
       }));
+      // Use absolute URLs for Stripe success/cancel (best practice for serverless)
+      const baseUrl = import.meta.env.VITE_SITE_URL || "https://pink-apron-bakery.vercel.app";
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: line_items,
-          success_url: window.location.origin + "/success",
-          cancel_url: window.location.origin + "/cart",
+          success_url: baseUrl + "/success",
+          cancel_url: baseUrl + "/cart",
         }),
       });
       const data = await res.json();
-      console.log("[checkout] API status:", res.status);
-      console.log("[checkout] API response:", data);
-      if (data.url) {
-        window.location.href = data.url;
+      if (data.id) {
+        // Use Stripe's redirectToCheckout for best practice
+        const { error } = await stripe.redirectToCheckout({ sessionId: data.id });
+        if (error) {
+          alert("Stripe redirect failed: " + error.message);
+        }
       } else {
         alert("There was a problem redirecting to payment.");
       }
-    } catch (e) {
-      console.log(e);
+    } catch {
       alert("Checkout failed. Please try again.");
     }
   };
