@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import Stripe from "stripe";
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -9,6 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  console.log("[checkout] Incoming body:", req.body);
   const { items, success_url, cancel_url } = req.body;
 
   if (!items || !Array.isArray(items)) {
@@ -24,8 +24,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       success_url: success_url || "https://yourdomain.com/success",
       cancel_url: cancel_url || "https://yourdomain.com/cancel",
     });
+    console.log("[checkout] Stripe session:", session);
     res.status(200).json({ id: session.id, url: session.url });
   } catch (err: any) {
+    console.error("[checkout] Error:", err);
     res.status(500).json({ error: err.message });
   }
 }

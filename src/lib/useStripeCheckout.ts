@@ -28,6 +28,8 @@ export function useStripeCheckout() {
         }),
       });
       const data = await res.json();
+      console.log("[checkout] API status:", res.status);
+      console.log("[checkout] API response:", data);
       if (data.url) {
         window.location.href = data.url;
       } else {
