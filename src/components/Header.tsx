@@ -4,7 +4,10 @@ import { useEffect, useState, useRef } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import CartDrawer from "@/components/CartDrawer";
+import SearchSuggestionDropdown from "@/components/SearchSuggestionDropdown";
+import { fetchProducts } from "@/lib/csv/parseProducts";
 import { useCartCount } from "@/store/cart";
+import type { Product } from "@/types/product";
 
 export default function Header() {
   const count = useCartCount();
@@ -19,6 +22,15 @@ export default function Header() {
     prevCount.current = count;
   }, [count, controls]);
   const [open, setOpen] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetchProducts()
+      .then(setProducts)
+      .catch(() => setProducts([]));
+  }, []);
 
   // search sync with /products?q=
   const navigate = useNavigate();
@@ -88,38 +100,57 @@ export default function Header() {
               </nav>
 
               {/* search (fixed width that shrinks gracefully) */}
-              <form onSubmit={onSearch} className="max-w-[28rem] min-w-[8rem] flex-1">
-                <div className="border-rose/30 relative overflow-hidden rounded-2xl border shadow-sm">
-                  <input
-                    value={q}
-                    onChange={(e) => setQ(e.target.value)}
-                    placeholder="Search cakes"
-                    className="placeholder:text-warmgray w-full bg-white/80 px-4 py-2.5 pr-12 outline-none"
-                    aria-label="Search cakes"
-                  />
-                  {q && (
-                    <button
-                      type="button"
-                      className="text-apron hover:text-rose absolute inset-y-0 right-10 grid aspect-square place-items-center"
-                      aria-label="Clear search"
-                      onClick={() => {
-                        setQ("");
-                        navigate("/products");
+              <div className="relative max-w-[28rem] min-w-[8rem] flex-1">
+                <form
+                  onSubmit={onSearch}
+                  autoComplete="off"
+                  onFocus={() => setShowSuggestions(true)}
+                >
+                  <div className="border-rose/30 relative overflow-hidden rounded-2xl border shadow-sm">
+                    <input
+                      ref={inputRef}
+                      value={q}
+                      onChange={(e) => {
+                        setQ(e.target.value);
+                        setShowSuggestions(true);
                       }}
-                      tabIndex={0}
+                      placeholder="Search cakes"
+                      className="placeholder:text-warmgray w-full bg-white/80 px-4 py-2.5 pr-12 outline-none"
+                      aria-label="Search cakes"
+                      onFocus={() => setShowSuggestions(true)}
+                    />
+                    {q && (
+                      <button
+                        type="button"
+                        className="text-apron hover:text-rose absolute inset-y-0 right-10 grid aspect-square place-items-center"
+                        aria-label="Clear search"
+                        onClick={() => {
+                          setQ("");
+                          setShowSuggestions(false);
+                          navigate("/products");
+                        }}
+                        tabIndex={0}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                    <button
+                      type="submit"
+                      className="bg-rose/90 hover:bg-rose absolute inset-y-0 right-0 grid aspect-square cursor-pointer place-items-center text-white"
+                      aria-label="Search"
                     >
-                      <X className="h-4 w-4" />
+                      <Search className="h-4 w-4" />
                     </button>
-                  )}
-                  <button
-                    type="submit"
-                    className="bg-rose/90 hover:bg-rose absolute inset-y-0 right-0 grid aspect-square cursor-pointer place-items-center text-white"
-                    aria-label="Search"
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
-                </div>
-              </form>
+                  </div>
+                </form>
+                {showSuggestions && q && products.length > 0 && (
+                  <SearchSuggestionDropdown
+                    query={q}
+                    products={products}
+                    onClose={() => setShowSuggestions(false)}
+                  />
+                )}
+              </div>
             </div>
 
             {/* Right: cart */}

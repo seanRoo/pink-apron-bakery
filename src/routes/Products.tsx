@@ -6,6 +6,8 @@ import { useLocation } from "react-router-dom";
 
 import CategoryPills from "@/components/CategoryPills";
 import ProductCard from "@/components/ProductCard";
+import { ProductDetailDialog } from "@/components/ProductDetailDialog";
+import ResponsiveProductImage from "@/components/ResponsiveProductImage";
 import { Spinner } from "@/components/ui/Spinner";
 import { type CategoryFilter } from "@/config/app";
 import { fetchProducts } from "@/lib/csv/parseProducts";
@@ -54,6 +56,14 @@ export default function Products() {
     return items;
   }, [all, category, query, allergyFilters]);
 
+  const [selected, setSelected] = useState<Product | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  const handleProductClick = (product: Product) => {
+    setSelected(product);
+    setSheetOpen(true);
+  };
+
   return (
     <section className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -65,34 +75,37 @@ export default function Products() {
         </h1>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <CategoryPills value={category} onChange={setCategory} />
-        {/* Allergy filter pills */}
-        <span className="text-warmgray mr-1 ml-4 text-xs font-medium">
-          Exclude cakes containing:
-        </span>
-        {ALLERGENS.map((allergen) => (
-          <button
-            key={allergen}
-            type="button"
-            className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-              allergyFilters.includes(allergen)
-                ? "bg-rose border-rose text-white"
-                : "text-apron border-apron/20 hover:bg-apron/10 bg-white"
-            }`}
-            onClick={() =>
-              setAllergyFilters((prev) =>
-                prev.includes(allergen) ? prev.filter((a) => a !== allergen) : [...prev, allergen],
-              )
-            }
-            aria-pressed={allergyFilters.includes(allergen)}
-            title={`Exclude cakes containing ${allergen}`}
-          >
-            {allergyFilters.includes(allergen)
-              ? `✕ ${allergen.charAt(0).toUpperCase() + allergen.slice(1)}`
-              : allergen.charAt(0).toUpperCase() + allergen.slice(1)}
-          </button>
-        ))}
+      <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:gap-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <CategoryPills value={category} onChange={setCategory} />
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-warmgray mr-1 text-xs font-medium">Exclude cakes containing:</span>
+          {ALLERGENS.map((allergen) => (
+            <button
+              key={allergen}
+              type="button"
+              className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                allergyFilters.includes(allergen)
+                  ? "bg-rose border-rose text-white"
+                  : "text-apron border-apron/20 hover:bg-apron/10 bg-white"
+              }`}
+              onClick={() =>
+                setAllergyFilters((prev) =>
+                  prev.includes(allergen)
+                    ? prev.filter((a) => a !== allergen)
+                    : [...prev, allergen],
+                )
+              }
+              aria-pressed={allergyFilters.includes(allergen)}
+              title={`Exclude cakes containing ${allergen}`}
+            >
+              {allergyFilters.includes(allergen)
+                ? `✕ ${allergen.charAt(0).toUpperCase() + allergen.slice(1)}`
+                : allergen.charAt(0).toUpperCase() + allergen.slice(1)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && <p className="mt-3 text-red-600">Error: {error}</p>}
@@ -119,11 +132,10 @@ export default function Products() {
                 exit={{ opacity: 0 }}
                 layout
               >
-                <img
-                  src="/img/placeholder.jpg"
+                <ResponsiveProductImage
+                  src="/img/placeholder.png"
                   alt="No products found"
                   className="border-apron/10 mb-4 h-24 w-24 rounded-full border object-contain opacity-80 drop-shadow-sm"
-                  draggable="false"
                 />
                 <div className="text-apron mb-1 font-sans text-lg font-medium tracking-tight">
                   No products found
@@ -141,14 +153,17 @@ export default function Products() {
                   exit={{ opacity: 0, y: 24 }}
                   transition={{ delay: i * 0.04, duration: 0.32, type: "spring", stiffness: 60 }}
                   layout
+                  onClick={() => handleProductClick(p)}
+                  className="cursor-pointer"
                 >
-                  <ProductCard product={{ ...p, images: ["/img/placeholder.jpg"] }} />
+                  <ProductCard product={p} />
                 </motion.div>
               ))
             )}
           </AnimatePresence>
         )}
       </div>
+      <ProductDetailDialog product={selected} open={sheetOpen} onOpenChange={setSheetOpen} />
     </section>
   );
 }

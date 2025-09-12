@@ -2,6 +2,8 @@ export type SelectedOptions = {
   size?: string;
   flavour?: string;
   addOns?: string[];
+  cakeName?: string;
+  topperNumber?: string;
 };
 
 export type CartItem = {

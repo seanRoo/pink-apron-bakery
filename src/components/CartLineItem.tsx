@@ -24,7 +24,7 @@ export default function CartLineItem({ item }: Props) {
     <div className="border-rose/10 mb-4 flex gap-3 rounded-2xl border bg-white/80 px-4 py-4 shadow-sm transition hover:shadow-md">
       <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-white">
         <ResponsiveProductImage
-          src={item.image || "/img/placeholder.jpg"}
+          src="/img/placeholder.png"
           alt={item.name}
           className="h-full w-full object-cover"
         />

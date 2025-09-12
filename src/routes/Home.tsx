@@ -130,12 +130,6 @@ export default function Home() {
               celebrate with style and flavor. Discover why our customers return time and again for
               cakes that look as good as they taste!
             </p>
-            <Link
-              to="/enquiry"
-              className="bg-apron hover:bg-rose inline-block rounded-xl px-5 py-2 font-semibold text-white shadow-md transition"
-            >
-              Meet the Baker
-            </Link>
           </div>
           <div className="flex justify-center">
             <ResponsiveProductImage

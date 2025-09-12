@@ -8,12 +8,14 @@ export function CartEmptyState({
   buttonText = "Continue shopping",
   message = "Looks like you haven't added anything yet.",
   iconSize = 64,
+  onCloseDrawer,
 }: {
   className?: string;
   buttonHref?: string;
   buttonText?: string;
   message?: string;
   iconSize?: number;
+  onCloseDrawer?: () => void;
 }) {
   const navigate = useNavigate();
   return (
@@ -42,7 +44,10 @@ export function CartEmptyState({
       <div className="text-warmgray mb-4 text-center text-sm">{message}</div>
       <Button
         className="bg-apron hover:bg-rose cursor-pointer rounded-full px-6 py-2 font-semibold text-white shadow transition-colors"
-        onClick={() => navigate(buttonHref)}
+        onClick={() => {
+          if (onCloseDrawer) onCloseDrawer();
+          navigate(buttonHref);
+        }}
       >
         {buttonText}
       </Button>

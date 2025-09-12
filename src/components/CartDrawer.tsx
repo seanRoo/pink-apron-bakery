@@ -53,7 +53,9 @@ export default function CartDrawer({ open, onOpenChange }: Props) {
         </div>
 
         <div className="bg-cream/40 flex-1 overflow-auto p-4">
-          {!hasItems && <CartEmptyState buttonHref="/products" />}
+          {!hasItems && (
+            <CartEmptyState buttonHref="/products" onCloseDrawer={() => onOpenChange(false)} />
+          )}
           <div className="space-y-3">
             <AnimatePresence initial={false}>
               {items.map((i) => (

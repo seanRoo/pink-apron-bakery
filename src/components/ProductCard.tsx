@@ -1,18 +1,15 @@
 import ResponsiveProductImage from "@/components/ResponsiveProductImage";
 import { formatPrice } from "@/lib/format";
-import { useCart } from "@/store/cart";
 import type { Product } from "@/types/product";
 
 type Props = { product: Product };
 
 export default function ProductCard({ product }: Props) {
-  const add = useCart((s) => s.add);
-
   return (
-    <div className="bg-cream hover:border-rose/20 flex h-full flex-col rounded-xl border border-transparent p-3 shadow-sm transition-all hover:shadow-lg">
+    <div className="bg-cream hover:border-rose/20 flex h-full cursor-pointer flex-col rounded-xl border border-transparent p-3 shadow-sm transition-all hover:scale-[1.025] hover:shadow-lg">
       <div className="mb-2 aspect-square overflow-hidden rounded-2xl">
         <ResponsiveProductImage
-          src={product.images?.[0] || "/img/placeholder.jpg"}
+          src="/img/placeholder.png"
           alt={product.name}
           className="h-full w-full rounded-2xl object-cover transition-transform duration-200 group-hover:scale-105"
         />
@@ -33,23 +30,6 @@ export default function ProductCard({ product }: Props) {
 
       {/* spacer → pins button to bottom */}
       <div className="mt-auto" />
-
-      <button
-        type="button"
-        onClick={() =>
-          add({
-            productId: product.id,
-            name: product.name,
-            slug: product.slug,
-            unitPrice: product.price_eur,
-            qty: 1,
-            image: product.images[0],
-          })
-        }
-        className="bg-apron hover:bg-rose mt-3 w-full cursor-pointer rounded-xl py-2 text-white active:opacity-90"
-      >
-        Add to cart
-      </button>
     </div>
   );
 }
