@@ -40,8 +40,8 @@ export default function CartDrawer({ open, onOpenChange }: Props) {
       <SheetContent side="right" className="text-ink flex w-full flex-col bg-white p-0 sm:max-w-md">
         <div className="p-4 pb-2">
           <SheetHeader className="pt-2 pb-3">
-            <div className="flex flex-col gap-1">
-              <SheetTitle className="text-rose mb-0.5 font-sans text-2xl font-bold tracking-wide">
+            <div className="flex flex-col gap-1 items-start">
+              <SheetTitle className="text-rose mb-0.5 font-sans text-2xl font-bold tracking-wide text-left">
                 Your cart
               </SheetTitle>
               <div className="bg-rose/20 mb-1 h-1 w-12 rounded-full" />
